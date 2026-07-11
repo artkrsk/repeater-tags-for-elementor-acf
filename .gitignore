@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+docs/
+vendor/
+vendor-prefixed/
+src/php/libraries/
+.DS_Store
+*.zip
