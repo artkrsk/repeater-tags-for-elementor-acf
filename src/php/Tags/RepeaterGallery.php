@@ -37,6 +37,10 @@ class RepeaterGallery extends \Elementor\Core\DynamicTags\Data_Tag {
 	}
 
 	/**
+	 * A gallery is a LIST of media cells: the field's return format decides whether ACF hands
+	 * back attachment arrays, attachment ids, or URL strings, and each item normalizes exactly
+	 * as a single image/file does. Unusable items drop out rather than seeding empty slides.
+	 *
 	 * @param array<string, mixed> $options
 	 * @return array<int, array{id: int, url: string}>
 	 */
@@ -50,22 +54,11 @@ class RepeaterGallery extends \Elementor\Core\DynamicTags\Data_Tag {
 		$items = array();
 
 		foreach ( $value as $item ) {
-			if ( ! is_array( $item ) ) {
-				continue;
+			$normalized = $this->normalize_media_value( $item );
+
+			if ( null !== $normalized ) {
+				$items[] = $normalized;
 			}
-
-			$id = 0;
-
-			if ( isset( $item['ID'] ) && is_numeric( $item['ID'] ) ) {
-				$id = (int) $item['ID'];
-			} elseif ( isset( $item['id'] ) && is_numeric( $item['id'] ) ) {
-				$id = (int) $item['id'];
-			}
-
-			$items[] = array(
-				'id'  => $id,
-				'url' => isset( $item['url'] ) && is_string( $item['url'] ) ? $item['url'] : '',
-			);
 		}
 
 		return $items;

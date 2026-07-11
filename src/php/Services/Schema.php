@@ -12,8 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * direct fields plus ONE hop inside a top-level group field (entry name becomes a dot
  * path). Sub-field maps are keyed by depth-1 PATHS within a row ('sub' or 'grp.sub');
  * nested repeaters inside a parent row become child entries (the second picker tier);
- * anything deeper is excluded by construction. Clone fields are excluded (two divergent
- * enumeration/format contracts — seamless splice vs __name keying).
+ * anything deeper is excluded by construction. Clone fields need no handling of their own:
+ * ACF resolves them at field-LOAD time, so a 'seamless' clone arrives here already spliced
+ * into the group as the real repeater (enumerating like any other, under a synthetic
+ * composite key), while a 'group' clone stays a `clone`-typed container — not a repeater, so
+ * it drops out with every other non-container type.
  *
  * @phpstan-type SubFieldMeta array{label: string, type: string, return_format: string}
  * @phpstan-type ChildMeta array{key: string, label: string, label_sub_field: string, sub_fields: array<string, SubFieldMeta>, text_sub_fields: array<int, string>}

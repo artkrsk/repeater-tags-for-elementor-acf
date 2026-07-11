@@ -43,30 +43,7 @@ class RepeaterMedia extends \Elementor\Core\DynamicTags\Data_Tag {
 	 * @return array{id: int, url: string}
 	 */
 	public function get_value( array $options = array() ): array {
-		$value = $this->resolve_cell();
-
-		if ( is_array( $value ) ) {
-			return array(
-				'id'  => isset( $value['id'] ) && is_numeric( $value['id'] ) ? (int) $value['id'] : 0,
-				'url' => isset( $value['url'] ) && is_string( $value['url'] ) ? $value['url'] : '',
-			);
-		}
-
-		if ( is_numeric( $value ) && (int) $value > 0 ) {
-			return array(
-				'id'  => (int) $value,
-				'url' => (string) wp_get_attachment_url( (int) $value ),
-			);
-		}
-
-		if ( is_string( $value ) && '' !== $value ) {
-			return array(
-				'id'  => 0,
-				'url' => $value,
-			);
-		}
-
-		return array(
+		return $this->normalize_media_value( $this->resolve_cell() ) ?? array(
 			'id'  => 0,
 			'url' => '',
 		);

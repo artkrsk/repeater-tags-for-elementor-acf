@@ -304,6 +304,52 @@ trait BaseRepeaterTag {
 	}
 
 	/**
+	 * One media cell across all three ACF return formats: an attachment ARRAY, an attachment
+	 * ID, or a plain URL STRING. Shared by the Media tag (one cell) and the Gallery tag (one
+	 * per item) — the shapes are identical, a gallery just arrives as a list of them.
+	 *
+	 * ACF's own attachment arrays carry the id as BOTH 'ID' and 'id'; rows synthesized through
+	 * the `arts_repeater_tags/rows` filter may carry only one, so both are accepted.
+	 *
+	 * @param mixed $value
+	 * @return array{id: int, url: string}|null Null when the value carries neither an id nor a
+	 *                                          url — the Media tag renders its empty shape,
+	 *                                          the Gallery tag drops the item.
+	 */
+	protected function normalize_media_value( $value ): ?array {
+		if ( is_array( $value ) ) {
+			$id = 0;
+
+			if ( isset( $value['ID'] ) && is_numeric( $value['ID'] ) ) {
+				$id = (int) $value['ID'];
+			} elseif ( isset( $value['id'] ) && is_numeric( $value['id'] ) ) {
+				$id = (int) $value['id'];
+			}
+
+			return array(
+				'id'  => $id,
+				'url' => isset( $value['url'] ) && is_string( $value['url'] ) ? $value['url'] : '',
+			);
+		}
+
+		if ( is_numeric( $value ) && (int) $value > 0 ) {
+			return array(
+				'id'  => (int) $value,
+				'url' => (string) wp_get_attachment_url( (int) $value ),
+			);
+		}
+
+		if ( is_string( $value ) && '' !== $value ) {
+			return array(
+				'id'  => 0,
+				'url' => $value,
+			);
+		}
+
+		return null;
+	}
+
+	/**
 	 * color_picker values across both return formats: the default 'string' format passes
 	 * through as saved (hex or rgba() string); the RGBA-'array' format ({red, green,
 	 * blue, alpha}) becomes a CSS rgba() string. Anything else drops to ''.
