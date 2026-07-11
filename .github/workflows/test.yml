@@ -198,6 +198,9 @@ jobs:
       - name: PHPUnit (integration)
         run: pnpm exec wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit
 
+      - name: PHPUnit (no ACF provider)
+        run: pnpm exec wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit -c phpunit-no-acf.xml.dist
+
       - name: PHPUnit (no provider)
         run: pnpm exec wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit -c phpunit-no-provider.xml.dist
 

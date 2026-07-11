@@ -292,6 +292,44 @@ class RowsTest extends TestCase {
 		$this->assertSame( array(), $this->rows->get_child_row_options( 'field_rt_unknown', 'specs', 0, $page_id ) );
 	}
 
+	public function test_child_rows_inherit_a_filtered_parent_override(): void {
+		// The filter fires ONCE per top-tier read; nested child rows ride INSIDE the parent
+		// rows it returns. That is the whole reason no child-tier filter exists — synthesized
+		// nested data must be reachable through the same single hook.
+		add_filter(
+			'arts_repeater_tags/rows',
+			static fn (): array => array(
+				array(
+					'title' => 'Synthesized parent',
+					'specs' => array(
+						array( 'spec_value' => 'Synthesized spec A' ),
+						array( 'spec_value' => 'Synthesized spec B' ),
+					),
+				),
+			)
+		);
+
+		$page_id = $this->make_page();
+		$parents = $this->rows->get( 'field_rt_nested_parent_items', $page_id );
+		$specs   = $this->rows->get_child_rows( $parents[0], 'specs' );
+
+		$this->assertCount( 2, $specs );
+		$this->assertSame( 'Synthesized spec B', $specs[1]['spec_value'] );
+
+		// The picker enumerates the same synthesized rows the render will resolve.
+		$this->assertSame(
+			array( -1, 0, 1 ),
+			array_column( $this->rows->get_child_row_options( 'field_rt_nested_parent_items', 'specs', 0, $page_id ), 'id' )
+		);
+	}
+
+	public function test_unsaved_group_hosted_repeater_reads_as_empty(): void {
+		// An unsaved GROUP still reads back as an array of empty sub-values, inside which the
+		// contained repeater is boolean false — so the dot-path descent has to survive a hop
+		// that lands on false rather than a list.
+		$this->assertSame( array(), $this->rows->get( 'field_rt_ng_repeater', $this->make_page() ) );
+	}
+
 	public function test_reads_memoize_per_key_and_context(): void {
 		$page_id = $this->make_page();
 

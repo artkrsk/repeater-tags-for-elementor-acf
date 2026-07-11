@@ -364,6 +364,123 @@ add_action(
 				),
 			)
 		);
+
+		// Type/format matrix — test schema only: no seeder, not bound on the demo page.
+		// 'rt_types_items' holds ONE sub-field per type any tag accepts, NAMED AFTER THE TYPE,
+		// so the compat-map test can drive itself straight off get_accepted_sub_field_types()
+		// and every accepted type is proven to render non-empty (no pickable dead-ends).
+		// 'rt_formats_items' holds the return_format variants of those same types — the shapes
+		// ACF hands back differ per format, and the tags normalize each one.
+		acf_add_local_field_group(
+			array(
+				'key'      => 'group_rt_types',
+				'title'    => 'RT Type Matrix',
+				'fields'   => array(
+					array(
+						'key'        => 'field_rt_types_items',
+						'label'      => 'Type Items',
+						'name'       => 'rt_types_items',
+						'type'       => 'repeater',
+						'layout'     => 'row',
+						'sub_fields' => array(
+							array( 'key' => 'field_rt_ty_text', 'label' => 'Text', 'name' => 'text', 'type' => 'text' ),
+							array( 'key' => 'field_rt_ty_textarea', 'label' => 'Textarea', 'name' => 'textarea', 'type' => 'textarea' ),
+							array( 'key' => 'field_rt_ty_email', 'label' => 'Email', 'name' => 'email', 'type' => 'email' ),
+							array( 'key' => 'field_rt_ty_url', 'label' => 'Url', 'name' => 'url', 'type' => 'url' ),
+							array( 'key' => 'field_rt_ty_number', 'label' => 'Number', 'name' => 'number', 'type' => 'number' ),
+							array( 'key' => 'field_rt_ty_range', 'label' => 'Range', 'name' => 'range', 'type' => 'range' ),
+							array( 'key' => 'field_rt_ty_date_picker', 'label' => 'Date Picker', 'name' => 'date_picker', 'type' => 'date_picker' ),
+							array( 'key' => 'field_rt_ty_date_time_picker', 'label' => 'Date Time Picker', 'name' => 'date_time_picker', 'type' => 'date_time_picker' ),
+							array( 'key' => 'field_rt_ty_time_picker', 'label' => 'Time Picker', 'name' => 'time_picker', 'type' => 'time_picker' ),
+							array( 'key' => 'field_rt_ty_color_picker', 'label' => 'Color Picker', 'name' => 'color_picker', 'type' => 'color_picker' ),
+							array( 'key' => 'field_rt_ty_wysiwyg', 'label' => 'Wysiwyg', 'name' => 'wysiwyg', 'type' => 'wysiwyg' ),
+							array( 'key' => 'field_rt_ty_google_map', 'label' => 'Google Map', 'name' => 'google_map', 'type' => 'google_map' ),
+							array( 'key' => 'field_rt_ty_select', 'label' => 'Select', 'name' => 'select', 'type' => 'select', 'choices' => array( 'one' => 'One', 'two' => 'Two' ) ),
+							array( 'key' => 'field_rt_ty_checkbox', 'label' => 'Checkbox', 'name' => 'checkbox', 'type' => 'checkbox', 'choices' => array( 'one' => 'One', 'two' => 'Two' ) ),
+							array( 'key' => 'field_rt_ty_radio', 'label' => 'Radio', 'name' => 'radio', 'type' => 'radio', 'choices' => array( 'one' => 'One', 'two' => 'Two' ) ),
+							array( 'key' => 'field_rt_ty_button_group', 'label' => 'Button Group', 'name' => 'button_group', 'type' => 'button_group', 'choices' => array( 'one' => 'One', 'two' => 'Two' ) ),
+							array( 'key' => 'field_rt_ty_image', 'label' => 'Image', 'name' => 'image', 'type' => 'image', 'return_format' => 'array' ),
+							array( 'key' => 'field_rt_ty_file', 'label' => 'File', 'name' => 'file', 'type' => 'file', 'return_format' => 'array' ),
+							array( 'key' => 'field_rt_ty_gallery', 'label' => 'Gallery', 'name' => 'gallery', 'type' => 'gallery', 'return_format' => 'array' ),
+							array( 'key' => 'field_rt_ty_link', 'label' => 'Link', 'name' => 'link', 'type' => 'link', 'return_format' => 'array' ),
+							array( 'key' => 'field_rt_ty_page_link', 'label' => 'Page Link', 'name' => 'page_link', 'type' => 'page_link' ),
+							array( 'key' => 'field_rt_ty_post_object', 'label' => 'Post Object', 'name' => 'post_object', 'type' => 'post_object', 'return_format' => 'id' ),
+							array( 'key' => 'field_rt_ty_relationship', 'label' => 'Relationship', 'name' => 'relationship', 'type' => 'relationship', 'return_format' => 'id' ),
+							array( 'key' => 'field_rt_ty_taxonomy', 'label' => 'Taxonomy', 'name' => 'taxonomy', 'type' => 'taxonomy', 'taxonomy' => 'category', 'return_format' => 'id' ),
+							array( 'key' => 'field_rt_ty_user', 'label' => 'User', 'name' => 'user', 'type' => 'user', 'return_format' => 'array' ),
+						),
+					),
+					array(
+						'key'        => 'field_rt_formats_items',
+						'label'      => 'Format Items',
+						'name'       => 'rt_formats_items',
+						'type'       => 'repeater',
+						'layout'     => 'row',
+						'sub_fields' => array(
+							array( 'key' => 'field_rt_fm_image_id', 'label' => 'Image (id)', 'name' => 'image_id', 'type' => 'image', 'return_format' => 'id' ),
+							array( 'key' => 'field_rt_fm_image_url', 'label' => 'Image (url)', 'name' => 'image_url', 'type' => 'image', 'return_format' => 'url' ),
+							array( 'key' => 'field_rt_fm_file_id', 'label' => 'File (id)', 'name' => 'file_id', 'type' => 'file', 'return_format' => 'id' ),
+							array( 'key' => 'field_rt_fm_file_url', 'label' => 'File (url)', 'name' => 'file_url', 'type' => 'file', 'return_format' => 'url' ),
+							array( 'key' => 'field_rt_fm_gallery_ids', 'label' => 'Gallery (id)', 'name' => 'gallery_ids', 'type' => 'gallery', 'return_format' => 'id' ),
+							array( 'key' => 'field_rt_fm_gallery_urls', 'label' => 'Gallery (url)', 'name' => 'gallery_urls', 'type' => 'gallery', 'return_format' => 'url' ),
+							array( 'key' => 'field_rt_fm_color_rgba', 'label' => 'Color (array)', 'name' => 'color_rgba', 'type' => 'color_picker', 'return_format' => 'array' ),
+							array( 'key' => 'field_rt_fm_link_url', 'label' => 'Link (url)', 'name' => 'link_url', 'type' => 'link', 'return_format' => 'url' ),
+							array( 'key' => 'field_rt_fm_select_array', 'label' => 'Select (array)', 'name' => 'select_array', 'type' => 'select', 'return_format' => 'array', 'choices' => array( 'one' => 'One', 'two' => 'Two' ) ),
+							array( 'key' => 'field_rt_fm_select_multi', 'label' => 'Select (multi, array)', 'name' => 'select_multi', 'type' => 'select', 'multiple' => 1, 'return_format' => 'array', 'choices' => array( 'one' => 'One', 'two' => 'Two' ) ),
+							array( 'key' => 'field_rt_fm_radio_array', 'label' => 'Radio (array)', 'name' => 'radio_array', 'type' => 'radio', 'return_format' => 'array', 'choices' => array( 'one' => 'One', 'two' => 'Two' ) ),
+							array( 'key' => 'field_rt_fm_button_group_array', 'label' => 'Button Group (array)', 'name' => 'button_group_array', 'type' => 'button_group', 'return_format' => 'array', 'choices' => array( 'one' => 'One', 'two' => 'Two' ) ),
+							array( 'key' => 'field_rt_fm_post_object_obj', 'label' => 'Post Object (object)', 'name' => 'post_object_obj', 'type' => 'post_object', 'return_format' => 'object' ),
+							array( 'key' => 'field_rt_fm_relationship_obj', 'label' => 'Relationship (object)', 'name' => 'relationship_obj', 'type' => 'relationship', 'return_format' => 'object' ),
+							array( 'key' => 'field_rt_fm_taxonomy_obj', 'label' => 'Taxonomy (object)', 'name' => 'taxonomy_obj', 'type' => 'taxonomy', 'taxonomy' => 'category', 'return_format' => 'object' ),
+							array( 'key' => 'field_rt_fm_user_id', 'label' => 'User (id)', 'name' => 'user_id', 'type' => 'user', 'return_format' => 'id' ),
+							array( 'key' => 'field_rt_fm_user_obj', 'label' => 'User (object)', 'name' => 'user_obj', 'type' => 'user', 'return_format' => 'object' ),
+							array( 'key' => 'field_rt_fm_page_link_multi', 'label' => 'Page Link (multi)', 'name' => 'page_link_multi', 'type' => 'page_link', 'multiple' => 1 ),
+							array( 'key' => 'field_rt_fm_dt_ymd', 'label' => 'Date Time (Y-m-d H:i:s)', 'name' => 'dt_ymd', 'type' => 'date_time_picker', 'return_format' => 'Y-m-d H:i:s' ),
+						),
+					),
+					// Both layouts define 'body' at the SAME path but with a DIFFERENT type. The
+					// Sub-field select offers one 'body' option (union meta comes from the first
+					// layout — wysiwyg), so rendering it correctly can only come from resolving
+					// the addressed ROW's acf_fc_layout: a Rich row must be kses'd, a Plain row
+					// esc_html'd. Nothing else in the fixtures can tell those two apart.
+					array(
+						'key'     => 'field_rt_types_flex',
+						'label'   => 'Type Flex',
+						'name'    => 'rt_types_flex',
+						'type'    => 'flexible_content',
+						'layouts' => array(
+							'layout_rt_ty_rich'  => array(
+								'key'        => 'layout_rt_ty_rich',
+								'name'       => 'rich',
+								'label'      => 'Rich',
+								'display'    => 'block',
+								'sub_fields' => array(
+									array( 'key' => 'field_rt_ty_rich_body', 'label' => 'Body', 'name' => 'body', 'type' => 'wysiwyg' ),
+								),
+							),
+							'layout_rt_ty_plain' => array(
+								'key'        => 'layout_rt_ty_plain',
+								'name'       => 'plain',
+								'label'      => 'Plain',
+								'display'    => 'block',
+								'sub_fields' => array(
+									array( 'key' => 'field_rt_ty_plain_body', 'label' => 'Body', 'name' => 'body', 'type' => 'text' ),
+								),
+							),
+						),
+					),
+				),
+				'location' => array(
+					array(
+						array(
+							'param'    => 'post_type',
+							'operator' => '==',
+							'value'    => 'page',
+						),
+					),
+				),
+			)
+		);
 	}
 );
 

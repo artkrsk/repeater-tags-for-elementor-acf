@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- Same harness minus the ACF provider: Elementor and PRO Elements ARE loaded. This is the
+     one dependency combo `Requires Plugins` cannot express (the header ANDs slug-exact
+     entries, and the repeater provider ships under two different slugs), so it is the combo
+     Schema's soft-check exists for — and the only one where the Elementor-facing seams
+     (tag registration, the ajax endpoint, the context ladder) run WITHOUT ACF behind them. -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	cacheResult="false"
+	colors="true"
+	convertDeprecationsToExceptions="false"
+	>
+	<testsuites>
+		<testsuite name="no-acf">
+			<directory>tests/NoAcf</directory>
+		</testsuite>
+	</testsuites>
+	<php>
+		<env name="WP_PHPUNIT__TESTS_CONFIG" value="/wordpress-phpunit/wp-tests-config.php" />
+		<env name="RT_TESTS_WITHOUT_ACF" value="1" />
+	</php>
+</phpunit>

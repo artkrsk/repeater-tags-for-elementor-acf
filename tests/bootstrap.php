@@ -28,11 +28,21 @@ require $rt_wp_phpunit_dir . '/includes/functions.php';
 tests_add_filter(
 	'muplugins_loaded',
 	static function (): void {
-		if ( '1' !== getenv( 'RT_TESTS_WITHOUT_PROVIDER' ) ) {
+		// Two independent gates, so the three suites can each stand up the dependency
+		// combo they characterize: everything, Elementor-without-ACF (the one combo
+		// `Requires Plugins` can't express — what Schema's soft-check exists for), and
+		// nothing at all.
+		$rt_without_provider = '1' === getenv( 'RT_TESTS_WITHOUT_PROVIDER' );
+		$rt_without_acf      = '1' === getenv( 'RT_TESTS_WITHOUT_ACF' );
+
+		if ( ! $rt_without_provider ) {
 			// Order matters: Elementor fires `elementor/loaded` synchronously on
 			// require, and PRO Elements refuses to boot until it has.
 			require WP_PLUGIN_DIR . '/elementor/elementor.php';
 			require WP_PLUGIN_DIR . '/pro-elements/pro-elements.php';
+		}
+
+		if ( ! $rt_without_provider && ! $rt_without_acf ) {
 			require WP_PLUGIN_DIR . '/secure-custom-fields/secure-custom-fields.php';
 		}
 

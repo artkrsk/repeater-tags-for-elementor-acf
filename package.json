@@ -16,8 +16,9 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "phpstan": "composer phpstan",
-    "test": "pnpm build && wp-env start && pnpm test:php && pnpm test:php:no-provider",
+    "test": "pnpm build && wp-env start && pnpm test:php && pnpm test:php:no-acf && pnpm test:php:no-provider",
     "test:php": "wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit",
+    "test:php:no-acf": "wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit -c phpunit-no-acf.xml.dist",
     "test:php:no-provider": "wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit -c phpunit-no-provider.xml.dist"
   },
   "devDependencies": {

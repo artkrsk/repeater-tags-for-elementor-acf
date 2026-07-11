@@ -32,8 +32,9 @@ pnpm build      # production ZIP in dist/
 pnpm typecheck  # tsc --noEmit (esbuild does NOT type-check)
 pnpm phpstan    # PHPStan level max, src/php + tests (composer install first)
 pnpm lint       # biome check (build/, dev/, src/ts — config in biome.json)
-pnpm test       # build → wp-env start → both PHPUnit suites (Docker required)
+pnpm test       # build → wp-env start → all three PHPUnit suites (Docker required)
 pnpm test:php   # inner loop: main suite only (env already up; rebuild after src/php edits)
+pnpm test:php:no-acf       # inner loop: the Elementor-without-ACF suite
 pnpm test:php:no-provider  # inner loop: the no-Elementor/no-SCF suite
 ```
 
@@ -80,12 +81,25 @@ with fixture field KEYS, mirroring the seeder value shapes), and the repo root a
 at muplugins_loaded: Elementor free, PRO Elements (GPL redistribution of Elementor Pro's PHP —
 a CI-only dev dependency that unlocks the Pro seams: `Conditions\RowCount`, `LoopRepeat`
 expansion, the real `loop-item` document in ContextTest; the manual stand stays authoritative
-for real Pro), and SCF. The `no-provider` suite (own phpunit config) loads neither and proves
-the plugin boots inert + Schema fails closed. Ports are 8890/8891 on purpose: 8888/8889 are
+for real Pro), and SCF. THREE suites, one bootstrap, two env-var gates
+(`RT_TESTS_WITHOUT_PROVIDER`, `RT_TESTS_WITHOUT_ACF`) — each has its own phpunit config: the
+main one; `no-acf` (Elementor + Pro, NO ACF — the one combo `Requires Plugins` can't express,
+so it's what Schema's soft-check exists for, and the only suite where the Elementor-facing
+seams run with nothing behind them); and `no-provider` (neither — the plugin boots inert, and
+Context is unreachable there because it dereferences `\Elementor\Plugin::$instance`).
+Ports are 8890/8891 on purpose: 8888/8889 are
 parked by another wp-env on the dev Mac, 8880/8881 by plugin-check on the CI runner; local
 overrides go in the gitignored `.wp-env.override.json`. All environment pins move TOGETHER
 when bumping: `.wp-env.json` core ↔ composer `wp-phpunit` (`~X.Y.0`, mirrors core releases) ↔
 the Elementor/PRO Elements/SCF zips.
+
+Tag suites construct tags directly (`new RepeaterText( [ 'id' => …, 'settings' => … ] )`, the
+same seam Elementor's own `Dynamic_Tags\Manager::create_tag()` uses) — see
+`tests/Integration/TagTestCase.php` for the two mechanics that constrain how. The
+`RT Type Matrix` fixture group is test-only (no seeder, not on the demo page): its sub-fields
+are NAMED AFTER THEIR ACF TYPE, which is what lets `TagCompatMapTest` drive itself off each
+tag's `get_accepted_sub_field_types()` and prove every accepted type is both offered and
+renders — add a type to a tag's map without a fixture sub-field and that test fails loudly.
 
 ## Architecture (one line each)
 
@@ -166,6 +180,16 @@ source. Route via the Task/Agent tool:
   inert/unpopulated rather than as the Select2 row picker (no error, no empty render).
 - **The tag popover is destroyed + rebuilt on every open** — control views refetch naturally;
   don't build stale-state workarounds.
+- **Elementor STRIPS a control's UI-only args (`label`, `options`, `placeholder`, …) on any
+  non-admin request** — `Controls_Stack::add_control()` unsets them when
+  `Performance::should_optimize_controls()` is true (`! is_admin() && ! preview_mode &&
+  ! REST_REQUEST`); the frontend only needs type/default/condition to resolve a value. Fine in
+  production (the editor and admin-ajax are admin requests), but under PHPUnit it means a
+  control's `options` simply don't exist. Asserting them needs `set_current_screen( 'edit-post' )`
+  PLUS resetting two statics: `Performance::$is_frontend` (its verdict is cached) and the
+  per-tag control stack (`controls_manager->delete_stack()`), which Elementor caches
+  process-wide keyed by `'tag-' . get_name()` — so `register_controls()` runs ONCE PER CLASS
+  PER PROCESS, not per instance. `TagCompatMapTest` does exactly this.
 - **Elementor ajax auto-forwards only `editor_post_id`** (the edited document — for a TB template
   that's the template itself). The row picker explicitly sends the preview target post id, which
   lives in the document PAGE SETTINGS: `elementor.settings.page.model.attributes.preview_id`

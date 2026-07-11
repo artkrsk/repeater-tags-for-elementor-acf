@@ -153,6 +153,82 @@ class SchemaTest extends TestCase {
 		$this->assertSame( 'RT Demo Options — Global Items (Options)', $options['field_rt_global_items'] );
 	}
 
+	/**
+	 * Registers a clone field pointing at field_rt_demo_items. ACF resolves clones at
+	 * FIELD-LOAD time, so what Schema sees depends entirely on the clone's display mode.
+	 */
+	private function add_clone_group( string $group_key, string $display, int $prefix_name ): void {
+		acf_add_local_field_group(
+			array(
+				'key'      => $group_key,
+				'title'    => 'RT Clone Demo',
+				'fields'   => array(
+					array(
+						'key'          => 'field_rt_clone_' . $display,
+						'label'        => 'Cloned',
+						'name'         => 'rt_cloned_' . $display,
+						'type'         => 'clone',
+						'clone'        => array( 'field_rt_demo_items' ),
+						'display'      => $display,
+						'prefix_name'  => $prefix_name,
+						'prefix_label' => 0,
+					),
+				),
+				'location' => array(
+					array(
+						array(
+							'param'    => 'post_type',
+							'operator' => '==',
+							'value'    => 'page',
+						),
+					),
+				),
+			)
+		);
+	}
+
+	private function remove_clone_group( string $group_key, string $display ): void {
+		acf_remove_local_field_group( $group_key );
+		acf_remove_local_field( 'field_rt_clone_' . $display );
+	}
+
+	public function test_a_group_display_clone_is_not_a_pickable_container(): void {
+		$this->add_clone_group( 'group_rt_clone_group', 'group', 0 );
+
+		try {
+			$repeaters = $this->schema()->get_repeaters();
+
+			// In 'group' display the clone stays a field of type 'clone' — it is a container
+			// of fields, not a repeater, so it is not addressable and never enumerates.
+			$this->assertArrayNotHasKey( 'field_rt_clone_group', $repeaters );
+			$this->assertCount(
+				0,
+				array_filter( array_keys( $repeaters ), static fn ( string $key ): bool => str_contains( $key, 'clone' ) )
+			);
+		} finally {
+			$this->remove_clone_group( 'group_rt_clone_group', 'group' );
+		}
+	}
+
+	public function test_a_seamless_clone_enumerates_as_a_container_in_its_own_right(): void {
+		$this->add_clone_group( 'group_rt_clone_seamless', 'seamless', 0 );
+
+		try {
+			// In 'seamless' display ACF SPLICES the cloned field into the group in place of
+			// the clone, handing Schema a genuine repeater under a synthetic composite key.
+			// There is nothing to exclude and nothing to special-case: it enumerates like any
+			// other repeater, and its name still points at the original field's storage.
+			$entry = $this->schema()->get_entry( 'field_rt_clone_seamless_field_rt_demo_items' );
+
+			$this->assertNotNull( $entry );
+			$this->assertSame( 'repeater', $entry['kind'] );
+			$this->assertSame( 'rt_demo_items', $entry['name'], 'no prefix_name: values live under the original field name' );
+			$this->assertSame( array( 'caption', 'blurb' ), array_slice( array_keys( $entry['sub_fields'] ), 0, 2 ) );
+		} finally {
+			$this->remove_clone_group( 'group_rt_clone_seamless', 'seamless' );
+		}
+	}
+
 	public function test_enumeration_memoizes_per_instance(): void {
 		$schema = $this->schema();
 		$schema->get_repeaters();
