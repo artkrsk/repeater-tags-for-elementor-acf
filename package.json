@@ -15,10 +15,14 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "phpstan": "composer phpstan"
+    "phpstan": "composer phpstan",
+    "test": "pnpm build && wp-env start && pnpm test:php && pnpm test:php:no-provider",
+    "test:php": "wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit",
+    "test:php:no-provider": "wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit -c phpunit-no-provider.xml.dist"
   },
   "devDependencies": {
     "@artemsemkin/elementor-types": "^1.0.10",
+    "@wordpress/env": "11.10.0",
     "@biomejs/biome": "2.5.3",
     "@types/node": "^26.1.1",
     "archiver": "^8.0.0",

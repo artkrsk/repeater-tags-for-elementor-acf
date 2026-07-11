@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!-- Same harness minus Elementor/SCF: proves the plugin boots inert and Schema fails
+     closed to empty enumeration when no repeater provider is installed. -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	cacheResult="false"
+	colors="true"
+	convertDeprecationsToExceptions="false"
+	>
+	<testsuites>
+		<testsuite name="no-provider">
+			<directory>tests/NoProvider</directory>
+		</testsuite>
+	</testsuites>
+	<php>
+		<env name="WP_PHPUNIT__TESTS_CONFIG" value="/wordpress-phpunit/wp-tests-config.php" />
+		<env name="RT_TESTS_WITHOUT_PROVIDER" value="1" />
+	</php>
+</phpunit>

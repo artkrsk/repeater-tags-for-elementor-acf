@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .env
+.wp-env.override.json
 docs/
 vendor/
 vendor-prefixed/

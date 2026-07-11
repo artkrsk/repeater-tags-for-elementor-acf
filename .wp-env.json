@@ -1,0 +1,16 @@
+{
+	"core": "https://wordpress.org/wordpress-7.0.1.zip",
+	"phpVersion": "8.3",
+	"port": 8890,
+	"testsPort": 8891,
+	"plugins": [
+		"https://downloads.wordpress.org/plugin/elementor.4.1.4.zip",
+		"https://github.com/proelements/proelements/releases/download/v4.1.0/pro-elements.zip",
+		"https://downloads.wordpress.org/plugin/secure-custom-fields.6.9.1.zip",
+		"./dist/repeater-tags-for-elementor-acf"
+	],
+	"mappings": {
+		"wp-content/mu-plugins": "./dev/mu-plugins",
+		"test-workspace": "."
+	}
+}

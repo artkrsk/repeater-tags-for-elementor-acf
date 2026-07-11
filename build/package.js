@@ -8,7 +8,8 @@ import {
   readdirSync,
   readFileSync,
   rmSync,
-  statSync
+  statSync,
+  writeFileSync
 } from 'node:fs'
 import path from 'node:path'
 import { ZipArchive } from 'archiver'
@@ -36,9 +37,14 @@ export async function buildRelease(ctx) {
   const { staging, zip } = ctx.paths
   const slug = ctx.config.slug
 
-  rmSync(staging, { recursive: true, force: true })
-  rmSync(zip, { force: true })
+  // Empty staging IN PLACE — never delete the dir itself: wp-env bind-mounts it
+  // into the test containers, and removing the mounted inode severs the mount
+  // (on Linux and macOS Docker Desktop alike) until the environment restarts.
   mkdirSync(staging, { recursive: true })
+  for (const entry of readdirSync(staging)) {
+    rmSync(path.join(staging, entry), { recursive: true, force: true })
+  }
+  rmSync(zip, { force: true })
 
   cpSync(ctx.paths.plugin, staging, { recursive: true, filter: notHidden })
   cpSync(ctx.paths.php, path.join(staging, 'src/php'), {
@@ -54,6 +60,18 @@ export async function buildRelease(ctx) {
   })
   copyFileSync(ctx.paths.composerJson, path.join(staging, 'composer.json'))
   // composer.lock deliberately not shipped (dev-dependency metadata, no runtime role)
+
+  // Pin the autoloader class suffix: dump-autoload reuses the suffix found in the
+  // copied autoload_real.php (the repo vendor's), and identically-named
+  // ComposerAutoloaderInit* classes fatal when the repo and the shipped plugin load
+  // in one PHP process — which the PHPUnit harness does on every run.
+  const stagedComposerJson = path.join(staging, 'composer.json')
+  const stagedComposer = JSON.parse(readFileSync(stagedComposerJson, 'utf8'))
+  stagedComposer.config = {
+    ...stagedComposer.config,
+    'autoloader-suffix': 'ArtsRepeaterTagsPlugin'
+  }
+  writeFileSync(stagedComposerJson, `${JSON.stringify(stagedComposer, null, 2)}\n`)
 
   if (ctx.config.vendor.autoloaderOnly) {
     // Packages live prefixed in vendor-prefixed/ — vendor/ ships the autoloader only
@@ -83,7 +101,8 @@ export async function buildRelease(ctx) {
   log.success(`Release ready: ${zip} (${size} KB)`)
 }
 
-// Staging is assembled clean by our own copy filters, so no zip-entry filter is needed
+// Staging lives across builds (emptied in place, see buildRelease), so macOS can
+// drop .DS_Store into it at any moment — filter hidden entries at the zip boundary
 function zipDirectory(dir, zipPath, rootName) {
   return new Promise((resolve, reject) => {
     const output = createWriteStream(zipPath)
@@ -91,17 +110,20 @@ function zipDirectory(dir, zipPath, rootName) {
     output.on('close', resolve)
     archive.on('error', reject)
     archive.pipe(output)
-    archive.directory(dir, rootName)
+    archive.directory(dir, rootName, (entry) =>
+      path.basename(entry.name).startsWith('.') ? false : entry
+    )
     archive.finalize().catch(reject)
   })
 }
 
 function assertRelease(ctx) {
   const slug = ctx.config.slug
+  // .DS_Store is not scanned here: staging persists across builds and macOS may
+  // recreate it at any time — the zip-entry filter keeps it out of the release.
   const entries = readdirSync(ctx.paths.staging, { recursive: true }).map(String)
   const offenders = entries.filter(
-    (e) =>
-      e.endsWith('.map') || path.basename(e) === 'composer.lock' || path.basename(e) === '.DS_Store'
+    (e) => e.endsWith('.map') || path.basename(e) === 'composer.lock'
   )
   if (offenders.length > 0) {
     throw new Error(`Dev artifacts leaked into release: ${offenders.join(', ')}`)

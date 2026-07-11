@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: RT Demo Fixtures (local dev only)
- * Description: Demo ACF field groups + seeded page for developing Repeater Tags for Elementor & ACF. Lives only on this Local site - not part of the plugin. Replaced by wp-env integration tests later.
+ * Description: Demo ACF field groups + seeded page for developing Repeater Tags for Elementor & ACF. Not part of the plugin - synced to the Local site AND mounted as mu-plugins by the wp-env test harness (the field groups are the test schema; seeders hook admin_init only and stay inert under PHPUnit).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

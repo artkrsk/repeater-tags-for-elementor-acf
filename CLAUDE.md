@@ -30,8 +30,11 @@ pnpm dev        # fixtures sync, then watch: esbuild TS → src/php/libraries/..
 pnpm sync       # push dev/mu-plugins fixtures to the Local site
 pnpm build      # production ZIP in dist/
 pnpm typecheck  # tsc --noEmit (esbuild does NOT type-check)
-pnpm phpstan    # PHPStan level max (composer install first)
+pnpm phpstan    # PHPStan level max, src/php + tests (composer install first)
 pnpm lint       # biome check (build/, dev/, src/ts — config in biome.json)
+pnpm test       # build → wp-env start → both PHPUnit suites (Docker required)
+pnpm test:php   # inner loop: main suite only (env already up; rebuild after src/php edits)
+pnpm test:php:no-provider  # inner loop: the no-Elementor/no-SCF suite
 ```
 
 Fresh clone: `composer install`, create `.env` with `DEV_TARGET=<Local site plugin dir>`, then
@@ -65,6 +68,24 @@ synced to the Local site's `wp-content/mu-plugins/` by `pnpm sync` / on `pnpm de
 idempotent seeders (guard options + sideloaded picsum media), and the seeded "Repeater Tags
 Demo" page — which is the visual test stand (bound sections + assertion notes; Elementor JSON
 exports in `dev/`).
+
+## Tests (wp-env + PHPUnit)
+
+`pnpm test` runs everything; the committed `.wp-env.json` defines the environment. The harness
+mounts the BUILT `dist/<slug>` as the plugin (tests exercise the shipped artifact — SmokeTest
+pins that with ReflectionClass file-origin asserts), `dev/mu-plugins/` as mu-plugins (the
+fixture field groups ARE the test schema; tests write their own content via `update_field()`
+with fixture field KEYS, mirroring the seeder value shapes), and the repo root as
+`test-workspace` (phpunit + root vendor). Main-suite providers, loaded by `tests/bootstrap.php`
+at muplugins_loaded: Elementor free, PRO Elements (GPL redistribution of Elementor Pro's PHP —
+a CI-only dev dependency that unlocks the Pro seams: `Conditions\RowCount`, `LoopRepeat`
+expansion, the real `loop-item` document in ContextTest; the manual stand stays authoritative
+for real Pro), and SCF. The `no-provider` suite (own phpunit config) loads neither and proves
+the plugin boots inert + Schema fails closed. Ports are 8890/8891 on purpose: 8888/8889 are
+parked by another wp-env on the dev Mac, 8880/8881 by plugin-check on the CI runner; local
+overrides go in the gitignored `.wp-env.override.json`. All environment pins move TOGETHER
+when bumping: `.wp-env.json` core ↔ composer `wp-phpunit` (`~X.Y.0`, mirrors core releases) ↔
+the Elementor/PRO Elements/SCF zips.
 
 ## Architecture (one line each)
 
@@ -156,6 +177,23 @@ source. Route via the Task/Agent tool:
 - **Writing `_elementor_data` raw via wp-cli leaves `_elementor_element_cache` stale** — the
   frontend serves old markup until you `delete_post_meta(…, '_elementor_element_cache')` (editor
   saves invalidate it automatically; only raw meta writes hit this).
+- **`dist/` staging is emptied IN PLACE by the build — never delete the dir itself.** wp-env
+  bind-mounts it; removing a mounted dir's inode severs the mount (Linux AND macOS Docker
+  Desktop, verified) until the env restarts. If tests suddenly see stale/absent plugin code
+  after touching the build, `wp-env stop && wp-env start` once.
+- **The staging build pins composer's `autoloader-suffix`.** `dump-autoload` otherwise REUSES
+  the suffix from the copied repo `autoload_real.php`, and two identically-named
+  `ComposerAutoloaderInit*` classes fatal when the repo and the built plugin load in one PHP
+  process — which every PHPUnit run does.
+- **WP test transactions don't reset in-process caches.** ACF's value store and the Plugin
+  singleton's Rows memo persist across tests — the base `tests/Integration/TestCase.php` resets
+  both; use fresh service instances in tests where memo isolation matters.
+- **Never `do_action('admin_init')` under PHPUnit** — every fixture seeder hooks it, including
+  the picsum.photos sideloads (network, flaky in CI). Seeders are inert in the test env by
+  construction; keep it that way.
+- **wp-env v11 deprecates the built-in tests-environment keys** (`testsPort`, `env`) in favor
+  of a `--config` file split. The pinned version still supports them; revisit the split when
+  bumping `@wordpress/env`.
 
 ## Conventions
 
