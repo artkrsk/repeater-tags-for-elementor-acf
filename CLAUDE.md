@@ -1,28 +1,15 @@
 # Arts Repeater Tags for Elementor and ACF
 
-Standalone wp.org-bound plugin: ACF repeater sub-fields as native Elementor **dynamic tags** with
-direct row addressing (repeater → row → sub-field pickers in the tag popover), plus a Pro-only
-repeat mode (rows as Loop Grid/Carousel items). No custom widgets, no templates, no data-shape
-assumptions. Clean fork of `arts-store-elementor-labels` (ArtsStore monorepo) — the donor
-stays in the shop; this repo lives its own life.
-
-## Status
-
-Working end-to-end: all tags render on page + Theme Builder template, three-tier picker live in
-the tag popover; options-page repeaters, collapsed-setting picker labels, context ladder
-(options → loop-item → term/user → get_the_ID), Number/Color/Date tags (+POST_META on Text/Number),
-Pro row-count display condition, Pro repeat mode (rows as loop items — verified on the stand:
-1 post × 3 rows → 3 cards; 2 posts × 2+1 rows → 3 cards), nested structures depth-1 (GH #2:
-group sub-fields as paths, repeater-in-repeater via a second picker tier, flexible content with
-layout-aware rows — stand sections 10–12). Data paths CLI-verified. The plugin boots on `arts/base`,
-Strauss-prefixed into `vendor-prefixed/` (see Conventions below); production builds ship
-`vendor/` autoloader-only (`vendor.autoloaderOnly`) plus the prefixed package —
-no dev stubs/PHPStan vendor in the ZIP.
-SCF verified (2026-07-10, v6.9.1): full battery passed with Secure Custom Fields swapped in for
-ACF Pro on the dev site — identical API surface and behavior, zero code changes; SCF stays
-installed (inactive) there for re-testing. Submitted to the wp.org Plugin Directory (2026-07-11),
-pending review. Deferred (deliberately, not forgotten): wp-env test harness, CI, i18n/pot.
-Open: interactive editor QA pass.
+Standalone wp.org plugin: ACF repeater sub-fields as native Elementor **dynamic tags** with
+direct row addressing (repeater → row → sub-field pickers in the tag popover). Seven tags
+(see Frozen contracts), nested structures depth-1 (group sub-fields as dot paths,
+repeater-in-repeater via a child picker tier, flexible content with layout-aware rows),
+options-page/term/user contexts, Theme Builder support. With Elementor Pro active it also
+offers a repeat mode (rows as Loop Grid/Carousel items) and a row-count display condition.
+No custom widgets, no templates, no data-shape assumptions. Clean fork of
+`arts-store-elementor-labels` (ArtsStore monorepo) — the donor stays in the shop; this repo
+lives its own life. Project state that changes over time (release/review status, deferred
+work) lives in the auto-memory, not in this file.
 
 ## Stack & requirements
 
@@ -66,8 +53,8 @@ wp plugin list
 Sync target: `DEV_TARGET` in the gitignored `.env` (native `process.loadEnvFile()`, no dotenv
 dep) → `project.config.js` `devTarget`; machine-specific values never live in committed config.
 `pnpm build` needs no `.env` (CI-safe); `pnpm dev` fails fast without it. Build tooling is the in-repo
-`build/` (lean rewrite 2026-07 — 8 flat ESM modules; the reference copy to vendor into future
-plugin extractions). ONE config file, `project.config.js` — unknown keys are hard errors (every
+`build/` (8 flat ESM modules; the reference copy to vendor into future plugin extractions —
+keep it project-agnostic). ONE config file, `project.config.js` — unknown keys are hard errors (every
 key must be read by the build); dev/prod behavior is intrinsic to the command, there are no env
 config files. Production compiles into a staging dir under `dist/` and never writes the source
 tree; dev mirrors per-file to the Local site and never creates `dist/`.
@@ -77,7 +64,7 @@ synced to the Local site's `wp-content/mu-plugins/` by `pnpm sync` / on `pnpm de
 (shop-shaped `product_mockups`/`product_counters` + `rt_demo_items` + options/term/book-CPT groups),
 idempotent seeders (guard options + sideloaded picsum media), and the seeded "Repeater Tags
 Demo" page — which is the visual test stand (bound sections + assertion notes; Elementor JSON
-exports in `dev/`). Foundation for wp-env integration tests later.
+exports in `dev/`).
 
 ## Architecture (one line each)
 
@@ -177,5 +164,5 @@ source. Route via the Task/Agent tool:
   `vendor-prefixed/` (namespace collision safety — other Arts plugins on the same site ship their
   own differently-prefixed copy). `vendor/` ships autoloader-only in production; stubs/PHPStan
   never ship.
-- Tests (when they come) are logic-only — no UI/markup/rendering tests.
+- Tests are logic-only — no UI/markup/rendering tests.
 - Frozen contracts above are storage contracts; treat like DB schema.
