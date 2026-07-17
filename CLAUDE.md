@@ -29,6 +29,8 @@ sites are reachable only through enumerated keys). No other `class_exists` sprin
 pnpm dev        # fixtures sync, then watch: esbuild TS → src/php/libraries/..., sync plugin → fluid-ds Local site
 pnpm sync       # push dev/mu-plugins fixtures to the Local site
 pnpm build      # production ZIP in dist/
+pnpm blueprint:build  # regenerate .wordpress-org/blueprints/blueprint.json (wp.org Live Preview)
+pnpm blueprint:check  # assert the demo page only binds field keys the demo seeder registers
 pnpm typecheck  # tsc --noEmit (esbuild does NOT type-check)
 pnpm phpstan    # PHPStan level max, src/php + tests (composer install first)
 pnpm lint       # biome check (build/, dev/, src/ts — config in biome.json)
@@ -121,6 +123,11 @@ renders — add a type to a tag's map without a fixture sub-field and that test 
 - `src/php/Conditions/RowCount.php` — Pro Display Condition ("row count vs N"); loads only via the
   Pro-only registration hook.
 - `src/php/Controls/RowPicker.php` + `src/ts/` — the one custom control (Select2 + Elementor ajax).
+- `dev/blueprint/` — the wp.org Live Preview (WordPress Playground). `seed.php` (mu-plugin: own
+  `field_rtb_*` groups, GD-drawn images, seeded rows, the demo page) + `demo-page.js` (the
+  `_elementor_data`, generated so the `__dynamic__` encoding has one implementation) →
+  `build-blueprint.js` inlines both into `.wordpress-org/blueprints/blueprint.json`. Ships to SVN
+  `assets/`, never in the plugin ZIP.
 
 ## Frozen contracts (never rename after first release)
 
@@ -215,6 +222,25 @@ source. Route via the Task/Agent tool:
 - **Never `do_action('admin_init')` under PHPUnit** — every fixture seeder hooks it, including
   the picsum.photos sideloads (network, flaky in CI). Seeders are inert in the test env by
   construction; keep it that way.
+- **The Playground demo seeder must stay OUT of `dev/mu-plugins/`.** That dir is bind-mounted as
+  mu-plugins by the wp-env harness, so a stray repeater there lands in `Schema::get_repeaters()`
+  enumeration and breaks the Schema suite. It lives in `dev/blueprint/` and is delivered to
+  Playground by a `writeFile` step instead.
+- **Elementor stores a dynamic tag as `settings.__dynamic__.{control} = '[elementor-tag id="…"
+  name="…" settings="…"]'`, where settings is `urlencode( wp_json_encode( $s, JSON_FORCE_OBJECT ) )`**
+  (`Core\DynamicTags\Manager::tag_to_text()`) — `urlencode`, so spaces are `+`, NOT
+  `rawurlencode`. `row_index`/`child_row_index_*` are JSON *strings* ("0", "-1") because Select2
+  stores strings. The tag `id` is decorative: `create_tag()` resolves the class by `name` alone.
+- **A raw `_elementor_data` write needs `wp_slash()`** — `update_metadata()` unslashes on the way
+  in, so an unslashed JSON string comes back corrupted (verified by byte-diff round trip).
+- **The free tier has no target for `arts-repeater-date`**: its only consumer is Pro's Countdown
+  `due_date`, the sole `Controls_Manager::DATE_TIME` control in Elementor. Bind a
+  `date_time_picker` sub-field through `arts-repeater-text` instead. Likewise term/user contexts
+  need a Pro Theme Builder archive template to make `get_queried_object()` a WP_Term/WP_User —
+  but the options-page context works free (`Context` checks `options_post_id` first).
+- **Only `RepeaterText`/`RepeaterNumber` support `before`/`after`/`fallback`** — they extend
+  `Tag`; the other five extend `Data_Tag`, whose `get_content()` has no affix handling. Any
+  fail-closed demo has to go through text or number.
 - **wp-env v11 deprecates the built-in tests-environment keys** (`testsPort`, `env`) in favor
   of a `--config` file split. The pinned version still supports them; revisit the split when
   bumping `@wordpress/env`.

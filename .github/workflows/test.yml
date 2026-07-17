@@ -64,6 +64,21 @@ jobs:
       - name: PHPStan
         run: pnpm phpstan
 
+      - name: Blueprint key check
+        run: pnpm blueprint:check
+
+      - name: Blueprint is regenerated
+        run: |
+          pnpm blueprint:build
+
+          # --porcelain, not `git diff --exit-code`: diff says nothing about an untracked file,
+          # so it would wave through a blueprint that was never committed.
+          if [ -n "$(git status --porcelain .wordpress-org/blueprints/blueprint.json)" ]; then
+            echo "::error::blueprint.json is stale or untracked — run pnpm blueprint:build and commit the result"
+            git status --porcelain .wordpress-org/blueprints/blueprint.json
+            exit 1
+          fi
+
   plugin-check:
     name: WordPress.org Plugin Check
     runs-on: self-hosted

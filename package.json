@@ -12,6 +12,8 @@
     "build": "node build/index.js build",
     "sync": "pnpm sync:fixtures",
     "sync:fixtures": "node dev/sync-fixtures.js",
+    "blueprint:build": "node dev/blueprint/build-blueprint.js",
+    "blueprint:check": "node dev/blueprint/check-keys.js",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome format --write .",
