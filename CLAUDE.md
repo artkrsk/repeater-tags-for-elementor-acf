@@ -59,7 +59,7 @@ wp plugin list
 Sync target: `DEV_TARGET` in the gitignored `.env` (native `process.loadEnvFile()`, no dotenv
 dep) → `project.config.js` `devTarget`; machine-specific values never live in committed config.
 `pnpm build` needs no `.env` (CI-safe); `pnpm dev` fails fast without it. Build tooling is the in-repo
-`build/` (8 flat ESM modules; the reference copy to vendor into future plugin extractions —
+`build/` (flat ESM modules; the reference copy to vendor into future plugin extractions —
 keep it project-agnostic). ONE config file, `project.config.js` — unknown keys are hard errors (every
 key must be read by the build); dev/prod behavior is intrinsic to the command, there are no env
 config files. Production compiles into a staging dir under `dist/` and never writes the source
@@ -233,11 +233,13 @@ source. Route via the Task/Agent tool:
   stores strings. The tag `id` is decorative: `create_tag()` resolves the class by `name` alone.
 - **A raw `_elementor_data` write needs `wp_slash()`** — `update_metadata()` unslashes on the way
   in, so an unslashed JSON string comes back corrupted (verified by byte-diff round trip).
-- **The free tier has no target for `arts-repeater-date`**: its only consumer is Pro's Countdown
-  `due_date`, the sole `Controls_Manager::DATE_TIME` control in Elementor. Bind a
-  `date_time_picker` sub-field through `arts-repeater-text` instead. Likewise term/user contexts
-  need a Pro Theme Builder archive template to make `get_queried_object()` a WP_Term/WP_User —
-  but the options-page context works free (`Context` checks `options_post_id` first).
+- **The free tier has no target for `arts-repeater-date`**: free Elementor ships no
+  `Controls_Manager::DATE_TIME` control at all, and Pro's Countdown `due_date` is the only
+  DATE_TIME control anywhere that opts into dynamic tags (Pro's others — Popup timing, Form
+  date min/max — don't). Bind a `date_time_picker` sub-field through `arts-repeater-text`
+  instead. Likewise term/user contexts need a Pro Theme Builder archive template to make
+  `get_queried_object()` a WP_Term/WP_User — but the options-page context works free
+  (`Context` checks `options_post_id` first).
 - **Only `RepeaterText`/`RepeaterNumber` support `before`/`after`/`fallback`** — they extend
   `Tag`; the other five extend `Data_Tag`, whose `get_content()` has no affix handling. Any
   fail-closed demo has to go through text or number.

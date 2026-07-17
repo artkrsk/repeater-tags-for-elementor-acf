@@ -6,9 +6,9 @@
  * a counter (not random) so `pnpm blueprint:build` is byte-stable and CI can diff it.
  *
  * Free-tier only. Deliberately absent, because free Elementor offers no target for them:
- * arts-repeater-date (its only consumer is Pro's Countdown `due_date` — the sole DATE_TIME
- * control in Elementor), and the term/user contexts (they need a Pro Theme Builder archive
- * template to make get_queried_object() a WP_Term/WP_User).
+ * arts-repeater-date (free Elementor has no DATE_TIME control at all; the only dynamic-enabled
+ * one anywhere is Pro's Countdown `due_date`), and the term/user contexts (they need a Pro
+ * Theme Builder archive template to make get_queried_object() a WP_Term/WP_User).
  */
 
 const SHOWCASE = 'field_rtb_showcase'
