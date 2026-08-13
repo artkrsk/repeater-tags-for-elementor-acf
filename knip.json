@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/ts/index.ts",
+    "project.config.js",
+    "dev/sync-fixtures.js",
+    "dev/blueprint/build-blueprint.js",
+    "dev/blueprint/check-keys.js"
+  ],
+  "project": ["src/ts/**/*.ts", "dev/**/*.js"],
+  "ignoreExportsUsedInFile": true,
+  "ignoreDependencies": ["fallow", "@wordpress/env"]
+}

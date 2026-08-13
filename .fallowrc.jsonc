@@ -1,0 +1,14 @@
+{
+  // Codebase-health instrument (advisory in CI; knip is the hard gate).
+  "entry": [
+    "src/ts/index.ts",
+    "project.config.js",
+    "dev/sync-fixtures.js",
+    "dev/blueprint/build-blueprint.js",
+    "dev/blueprint/check-keys.js"
+  ],
+  "ignorePatterns": ["dist/**", "vendor/**", "vendor-prefixed/**", "src/php/**"],
+  "ignoreExportsUsedInFile": true,
+  "duplicates": { "minOccurrences": 3 },
+  "health": { "ignore": ["**/*.test.ts"] }
+}

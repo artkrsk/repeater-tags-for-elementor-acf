@@ -38,11 +38,15 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Arts\\RepeaterTags\\Tests\\": "tests/"
+      "Arts\\RepeaterTags\\Tests\\": "tests/php/"
     }
   },
   "config": {
-    "optimize-autoloader": true
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "phpstan/extension-installer": true
+    }
   },
   "require-dev": {
     "arts/elementor-stubs": "^4.0",
@@ -53,7 +57,8 @@
     "phpunit/phpunit": "^9.6",
     "wp-phpunit/wp-phpunit": "~7.0.0",
     "yoast/phpunit-polyfills": "^4.0",
-    "phpstan/phpstan-phpunit": "^2.0"
+    "phpstan/phpstan-phpunit": "^2.0",
+    "arts/wp-plugin-standards": "^1.0"
   },
   "extra": {
     "strauss": {

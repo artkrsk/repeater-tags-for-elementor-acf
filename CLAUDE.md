@@ -25,23 +25,38 @@ sites are reachable only through enumerated keys). No other `class_exists` sprin
 
 ## Commands
 
+The build/release mechanics live in `@arts/wp-plugin-tooling` (`arts-wp`), shared across the
+Arts plugins — package.json keeps only human-run scripts; everything else goes through
+`pnpm exec`.
+
 ```bash
-pnpm dev        # fixtures sync, then watch: esbuild TS → src/php/libraries/..., sync plugin → fluid-ds Local site
-pnpm sync       # push dev/mu-plugins fixtures to the Local site
-pnpm build      # production ZIP in dist/
-pnpm blueprint:build  # regenerate .wordpress-org/blueprints/blueprint.json (wp.org Live Preview)
-pnpm blueprint:check  # assert the demo page only binds field keys the demo seeder registers
-pnpm typecheck  # tsc --noEmit (esbuild does NOT type-check)
-pnpm phpstan    # PHPStan level max, src/php + tests (composer install first)
-pnpm lint       # biome check (build/, dev/, src/ts — config in biome.json)
-pnpm test       # build → wp-env start → all three PHPUnit suites (Docker required)
-pnpm test:php   # inner loop: main suite only (env already up; rebuild after src/php edits)
-pnpm test:php:no-acf       # inner loop: the Elementor-without-ACF suite
-pnpm test:php:no-provider  # inner loop: the no-Elementor/no-SCF suite
+pnpm dev:plugin  # watch: esbuild TS → src/php/libraries/..., sync plugin → fluid-ds Local site
+pnpm build       # production ZIP in dist/ (with release assertions)
+pnpm test        # Vitest (currently empty — passWithNoTests)
+node dev/sync-fixtures.js       # push dev/mu-plugins fixtures to the Local site (rare; fixtures change)
+node dev/blueprint/build-blueprint.js  # regenerate .wordpress-org/blueprints/blueprint.json
+node dev/blueprint/check-keys.js       # assert the demo page only binds keys the seeder registers
+pnpm exec tsc --noEmit          # typecheck (esbuild does NOT type-check)
+pnpm exec biome check .         # lint/format
+pnpm exec knip                  # unused files/exports/deps (hard gate in CI)
+vendor/bin/phpstan analyse --memory-limit=1G   # level max, src/php + tests/php
+vendor/bin/phpcs                # ArtsFramework ruleset
 ```
 
+PHP suites (CI's integration job; locally needs Docker — `pnpm build && pnpm exec wp-env start`,
+then one of):
+
+```bash
+pnpm exec wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit -c tests/php/phpunit.xml.dist
+pnpm exec wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit -c tests/php/phpunit-no-acf.xml.dist
+pnpm exec wp-env run tests-cli --env-cwd=test-workspace -- vendor/bin/phpunit -c tests/php/phpunit-no-provider.xml.dist
+```
+
+Don't pipe these through `tail`/`grep` in `&&` chains — pipes mask exit codes and failures have
+slipped through that way.
+
 Fresh clone: `composer install`, create `.env` with `DEV_TARGET=<Local site plugin dir>`, then
-`pnpm dev`. `arts/base` gets Strauss-prefixed
+`pnpm dev:plugin`. `arts/base` gets Strauss-prefixed
 into `vendor-prefixed/` automatically via `post-install-cmd`/`post-update-cmd` (a deliberate
 deviation from the ArtsStore monorepo's manual `composer prefix-namespaces`, which has two paper
 cuts: a fresh clone hard-fails scanning a missing `vendor-prefixed/` classmap dir, and a forgotten
@@ -58,14 +73,12 @@ wp plugin list
 
 Sync target: `DEV_TARGET` in the gitignored `.env` (native `process.loadEnvFile()`, no dotenv
 dep) → `project.config.js` `devTarget`; machine-specific values never live in committed config.
-`pnpm build` needs no `.env` (CI-safe); `pnpm dev` fails fast without it. Build tooling is the in-repo
-`build/` (flat ESM modules; the reference copy to vendor into future plugin extractions —
-keep it project-agnostic). ONE config file, `project.config.js` — unknown keys are hard errors (every
+`pnpm build` needs no `.env` (CI-safe); `pnpm dev:plugin` fails fast without it. ONE config file, `project.config.js` — unknown keys are hard errors (every
 key must be read by the build); dev/prod behavior is intrinsic to the command, there are no env
 config files. Production compiles into a staging dir under `dist/` and never writes the source
 tree; dev mirrors per-file to the Local site and never creates `dist/`.
 Dev fixtures live IN the repo at `dev/mu-plugins/rt-demo-fixtures.php` — the source of truth,
-synced to the Local site's `wp-content/mu-plugins/` by `pnpm sync` / on `pnpm dev` startup
+synced to the Local site's `wp-content/mu-plugins/` by `node dev/sync-fixtures.js` / on `pnpm dev:plugin` startup
 (`dev/sync-fixtures.js` derives the target from `devTarget`). Field groups
 (shop-shaped `product_mockups`/`product_counters` + `rt_demo_items` + options/term/book-CPT groups),
 idempotent seeders (guard options + sideloaded picsum media), and the seeded "Repeater Tags
@@ -74,12 +87,12 @@ exports in `dev/`).
 
 ## Tests (wp-env + PHPUnit)
 
-`pnpm test` runs everything; the committed `.wp-env.json` defines the environment. The harness
+CI's integration job runs all three suites; the committed `.wp-env.json` defines the environment. The harness
 mounts the BUILT `dist/<slug>` as the plugin (tests exercise the shipped artifact — SmokeTest
 pins that with ReflectionClass file-origin asserts), `dev/mu-plugins/` as mu-plugins (the
 fixture field groups ARE the test schema; tests write their own content via `update_field()`
 with fixture field KEYS, mirroring the seeder value shapes), and the repo root as
-`test-workspace` (phpunit + root vendor). Main-suite providers, loaded by `tests/bootstrap.php`
+`test-workspace` (phpunit + root vendor). Main-suite providers, loaded by `tests/php/bootstrap.php`
 at muplugins_loaded: Elementor free, PRO Elements (GPL redistribution of Elementor Pro's PHP —
 a CI-only dev dependency that unlocks the Pro seams: `Conditions\RowCount`, `LoopRepeat`
 expansion, the real `loop-item` document in ContextTest; the manual stand stays authoritative
@@ -97,7 +110,7 @@ the Elementor/PRO Elements/SCF zips.
 
 Tag suites construct tags directly (`new RepeaterText( [ 'id' => …, 'settings' => … ] )`, the
 same seam Elementor's own `Dynamic_Tags\Manager::create_tag()` uses) — see
-`tests/Integration/TagTestCase.php` for the two mechanics that constrain how. The
+`tests/php/Integration/TagTestCase.php` for the two mechanics that constrain how. The
 `RT Type Matrix` fixture group is test-only (no seeder, not on the demo page): its sub-fields
 are NAMED AFTER THEIR ACF TYPE, which is what lets `TagCompatMapTest` drive itself off each
 tag's `get_accepted_sub_field_types()` and prove every accepted type is both offered and
@@ -169,7 +182,7 @@ source. Route via the Task/Agent tool:
   the `ARTS_REPEATER_TAGS_PLUGIN_VERSION` define, `package.json` version, and JS/CSS banners;
   its `plugin`/`wordpress` blocks drive the other header/readme fields (License, Requires at
   least/PHP, Tested up to, Text Domain, title — the `plugin` block wins over root-level keys).
-  `build/meta.js` stamps on every `pnpm dev`/`pnpm build` and live via a `composer.json`
+  The tooling's meta stamper runs on every `pnpm dev:plugin`/`pnpm build` and live via a `composer.json`
   watcher while dev runs. Edit `composer.json`, not the header or readme directly — a direct
   edit to those fields gets silently overwritten. Stamping replaces existing lines only (never
   inserts); `Requires Plugins` is the one header field it never touches (hand-maintained).
@@ -217,7 +230,7 @@ source. Route via the Task/Agent tool:
   `ComposerAutoloaderInit*` classes fatal when the repo and the built plugin load in one PHP
   process — which every PHPUnit run does.
 - **WP test transactions don't reset in-process caches.** ACF's value store and the Plugin
-  singleton's Rows memo persist across tests — the base `tests/Integration/TestCase.php` resets
+  singleton's Rows memo persist across tests — the base `tests/php/Integration/TestCase.php` resets
   both; use fresh service instances in tests where memo isolation matters.
 - **Never `do_action('admin_init')` under PHPUnit** — every fixture seeder hooks it, including
   the picsum.photos sideloads (network, flaky in CI). Seeders are inert in the test env by

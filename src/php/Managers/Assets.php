@@ -13,7 +13,7 @@ class Assets extends BaseManager {
 	public function enqueue_editor_js(): void {
 		$relative = 'libraries/repeater-tags-for-elementor-acf/repeater-tags-for-elementor-acf.js';
 		// filemtime suffix busts browser/proxy caches on every bundle change (dev syncs + plugin updates alike).
-		$mtime    = filemtime( $this->plugin_dir_path . $relative );
+		$mtime = filemtime( $this->plugin_dir_path . $relative );
 
 		wp_enqueue_script(
 			'arts-repeater-tags-editor',
