@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Arts Repeater Tags for Elementor and ACF
  * Description: ACF repeater sub-fields as native Elementor dynamic tags with direct row addressing — no loops, no templates.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Artem Semkin
  * License: GPLv3
  * License URI: https://www.gnu.org/licenses/gpl-3.0
@@ -12,14 +12,14 @@
  * Text Domain: repeater-tags-for-elementor-acf
  * Plugin URI: https://artemsemkin.com/plugins/repeater-tags-for-elementor-acf/
  * Author URI: https://artemsemkin.com
- * Tested up to: 7.0
+ * Tested up to: 7.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ARTS_REPEATER_TAGS_PLUGIN_VERSION', '1.0.0' );
+define( 'ARTS_REPEATER_TAGS_PLUGIN_VERSION', '1.0.1' );
 
 require_once __DIR__ . '/vendor/autoload.php';
 

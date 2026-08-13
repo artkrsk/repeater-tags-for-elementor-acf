@@ -1,6 +1,6 @@
 {
   "name": "arts/repeater-tags-for-elementor-acf",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ACF repeater sub-fields as native Elementor dynamic tags with direct row addressing — no loops, no templates.",
   "license": "GPL-3.0-or-later",
   "homepage": "https://artemsemkin.com",
@@ -21,7 +21,7 @@
   },
   "wordpress": {
     "Requires at least": "6.0",
-    "Tested up to": "7.0",
+    "Tested up to": "7.1",
     "Requires PHP": "8.0"
   },
   "require": {
