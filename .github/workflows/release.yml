@@ -36,6 +36,14 @@ jobs:
     needs: prepare-changelog
     uses: artkrsk/wordpress-plugin-release-action/.github/workflows/release.yml@main
     with:
+      # Auto-detection walks the repo for any PHP file with a "Plugin Name:" header and
+      # "dev" sorts before "src" — it was matching dev/mu-plugins/rt-demo-fixtures.php
+      # (a real WordPress mu-plugin, so it legitimately carries the same header) before
+      # ever reaching the actual plugin file. Pinned explicitly to stop relying on
+      # detection order that depends on repo layout accidents.
+      plugin_slug: 'repeater-tags-for-elementor-acf'
+      main_plugin_file: 'src/wordpress-plugin/repeater-tags-for-elementor-acf.php'
+
       # Node 24: last LTS line that still bundles corepack (the action uses it for pnpm)
       node_version: '24'
       php_version: '8.4'
