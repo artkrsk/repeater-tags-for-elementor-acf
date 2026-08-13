@@ -114,7 +114,7 @@ Taxonomy term and author archives work; the tag reads the repeater from the quer
 == Changelog ==
 
 = 1.0.1 =
-* Confirmed compatibility with WordPress 7.1.
+* improved: confirmed compatibility with WordPress 7.1.
 
 = 1.0.0 =
-* Initial release: seven dynamic tags (text, image, URL, gallery, number, color, date), row picker with "Last row" mode, nested fields one level deep (groups as paths, repeater-in-repeater with a second row picker, flexible content), options page, term and user contexts, Theme Builder support. With Elementor Pro: repeat mode for Loop Grid/Carousel (one card per row) and the row count display condition.
+* added: seven dynamic tags (text, image, URL, gallery, number, color, date), row picker with "Last row" mode, nested fields one level deep (groups as paths, repeater-in-repeater with a second row picker, flexible content), options page, term and user contexts, Theme Builder support. With Elementor Pro: repeat mode for Loop Grid/Carousel (one card per row) and the row count display condition.
