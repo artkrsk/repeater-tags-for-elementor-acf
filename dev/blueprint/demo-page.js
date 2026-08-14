@@ -3,7 +3,8 @@
  *
  * Generated rather than hand-written: every dynamic-tag binding goes through tag(), so the
  * shortcode encoding has exactly one implementation to get right. Element ids are derived from
- * a counter (not random) so `pnpm blueprint:build` is byte-stable and CI can diff it.
+ * a counter (not random) so `node dev/blueprint/build-blueprint.js` is byte-stable and CI can
+ * diff it.
  *
  * Free-tier only. Deliberately absent, because free Elementor offers no target for them:
  * arts-repeater-date (free Elementor has no DATE_TIME control at all; the only dynamic-enabled
