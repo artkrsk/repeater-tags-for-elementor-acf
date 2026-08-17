@@ -1,13 +1,60 @@
-<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_1_3)">
-<path d="M256 0H0V256H256V0Z" fill="#17191C"/>
-<path d="M190 56H66C60.4772 56 56 60.4772 56 66V82C56 87.5228 60.4772 92 66 92H190C195.523 92 200 87.5228 200 82V66C200 60.4772 195.523 56 190 56Z" fill="#34393F"/>
-<path d="M190 110H66C60.4772 110 56 114.477 56 120V136C56 141.523 60.4772 146 66 146H190C195.523 146 200 141.523 200 136V120C200 114.477 195.523 110 190 110Z" fill="#16BBBC"/>
-<path d="M190 164H66C60.4772 164 56 168.477 56 174V190C56 195.523 60.4772 200 66 200H190C195.523 200 200 195.523 200 190V174C200 168.477 195.523 164 190 164Z" fill="#34393F"/>
-</g>
-<defs>
-<clipPath id="clip0_1_3">
-<rect width="256" height="256" fill="white"/>
-</clipPath>
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Arts Repeater Tags for Elementor and ACF">
+  <title>Arts Repeater Tags for Elementor and ACF</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="256" x2="256" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#333333"/>
+      <stop offset="1" stop-color="#111111"/>
+    </linearGradient>
+    <style>
+      /* One 8s loop, four holds: a colored selection hops between repeater rows
+         OUT OF ORDER (1st, 3rd, 2nd, 4th) - direct row addressing, any row in any
+         order. Holds are keyframe pairs with identical values; the ease sits on
+         the keyframe that closes each hold. Fill color rides along per stop.
+
+         Nothing in this stylesheet may contain a literal angle bracket or
+         ampersand: served as an image the file is parsed as XML, where style
+         contents are NOT raw text, so a bare bracket breaks the whole SVG -
+         silently, as a broken image.
+
+         The markup attributes double as the resting state: selection on the
+         first row in indigo, that row's content bright. Reduced motion simply
+         stops the animations and lands there. */
+      .sel { animation: sel 8s infinite; will-change: transform; }
+      .c { will-change: opacity; }
+      .c0 { animation: c0 8s infinite; }
+      .c1 { animation: c1 8s infinite; }
+      .c2 { animation: c2 8s infinite; }
+      .c3 { animation: c3 8s infinite; }
+      @keyframes sel {
+        0%, 17%  { transform: translateY(0);     fill: #4F46E5; animation-timing-function: cubic-bezier(.34,1.4,.64,1); }
+        25%, 42% { transform: translateY(76px);  fill: #7C3AED; animation-timing-function: cubic-bezier(.34,1.4,.64,1); }
+        50%, 67% { transform: translateY(38px);  fill: #0D9488; animation-timing-function: cubic-bezier(.34,1.4,.64,1); }
+        75%, 92% { transform: translateY(114px); fill: #E11D48; animation-timing-function: cubic-bezier(.34,1.4,.64,1); }
+        100%     { transform: translateY(0);     fill: #4F46E5; }
+      }
+      @keyframes c0 { 0%, 17% { opacity: .95; } 25%, 92% { opacity: .4; } 100% { opacity: .95; } }
+      @keyframes c2 { 0%, 17% { opacity: .4; } 25%, 42% { opacity: .95; } 50%, 100% { opacity: .4; } }
+      @keyframes c1 { 0%, 42% { opacity: .4; } 50%, 67% { opacity: .95; } 75%, 100% { opacity: .4; } }
+      @keyframes c3 { 0%, 67% { opacity: .4; } 75%, 92% { opacity: .95; } 100% { opacity: .4; } }
+      @media (prefers-reduced-motion: reduce) {
+        .sel, .c { animation: none; }
+      }
+    </style>
+  </defs>
+
+  <rect width="256" height="256" rx="54" fill="url(#bg)"/>
+  <rect x="0.75" y="0.75" width="254.5" height="254.5" rx="53.25" fill="none" stroke="#FFFFFF" stroke-opacity="0.06"/>
+  <rect x="26" y="42" width="204" height="172" rx="26" fill="#FFFFFF" fill-opacity="0.03" stroke="#FFFFFF" stroke-opacity="0.12"/>
+
+  <rect x="42" y="57"  width="172" height="28" rx="9" fill="#FFFFFF" fill-opacity="0.08"/>
+  <rect x="42" y="95"  width="172" height="28" rx="9" fill="#FFFFFF" fill-opacity="0.08"/>
+  <rect x="42" y="133" width="172" height="28" rx="9" fill="#FFFFFF" fill-opacity="0.08"/>
+  <rect x="42" y="171" width="172" height="28" rx="9" fill="#FFFFFF" fill-opacity="0.08"/>
+
+  <rect class="sel" x="42" y="57" width="172" height="28" rx="9" fill="#4F46E5"/>
+
+  <g class="c c0" fill="#FFFFFF" opacity="0.95"><rect x="52" y="64"  width="14" height="14" rx="4"/><rect x="74" y="67"  width="88"  height="8" rx="4"/></g>
+  <g class="c c1" fill="#FFFFFF" opacity="0.4"><rect x="52" y="102" width="14" height="14" rx="4"/><rect x="74" y="105" width="68"  height="8" rx="4"/></g>
+  <g class="c c2" fill="#FFFFFF" opacity="0.4"><rect x="52" y="140" width="14" height="14" rx="4"/><rect x="74" y="143" width="100" height="8" rx="4"/></g>
+  <g class="c c3" fill="#FFFFFF" opacity="0.4"><rect x="52" y="178" width="14" height="14" rx="4"/><rect x="74" y="181" width="78"  height="8" rx="4"/></g>
 </svg>
