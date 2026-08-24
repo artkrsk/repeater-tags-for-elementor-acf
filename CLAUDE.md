@@ -23,8 +23,7 @@ keys. No other `class_exists` sprinkling.
 
 ## Commands
 
-Build/release mechanics live in `@arts/wp-plugin-tooling` (`arts-wp`), shared across the Arts
-plugins — package.json keeps only human-run scripts; everything else goes through `pnpm exec`.
+Build/release mechanics live in `@arts/wp-plugin-tooling` (`arts-wp`).
 
 ```bash
 pnpm dev:plugin  # watch: esbuild TS → src/php/libraries/..., sync plugin → fluid-ds Local site
@@ -54,11 +53,9 @@ slipped through that way.
 
 Fresh clone: `composer install`, create `.env` with `DEV_TARGET=<Local site plugin dir>`, then
 `pnpm dev:plugin`. `arts/base` gets Strauss-prefixed into `vendor-prefixed/` automatically via
-`post-install-cmd`/`post-update-cmd` (unlike the ArtsStore monorepo's manual run, which hard-fails a
-fresh clone scanning a missing classmap dir and silently runs stale prefixed code after a forgotten
-re-run). `composer prefix-namespaces` still works for a manual re-run.
+`post-install-cmd`/`post-update-cmd`; `composer prefix-namespaces` re-runs it by hand.
 
-Dev site: `/Users/art/Local Sites/fluid-ds/app/public` (shared with the FDS plugin — no overlap).
+Dev site: `/Users/art/Local Sites/fluid-ds/app/public` (shared with every Arts plugin).
 wp-cli against it (Local ships its own PHP/MySQL/wp-cli per site — source the env first, one invocation):
 
 ```bash
@@ -74,10 +71,9 @@ behavior is intrinsic to the command — no env config files. Production compile
 under `dist/` and never writes the source tree; dev mirrors per-file to the Local site and never
 creates `dist/`. Dev fixtures live IN the repo at `dev/mu-plugins/rt-demo-fixtures.php` — the source
 of truth, pushed to the Local site's `wp-content/mu-plugins/` by `node dev/sync-fixtures.js` (which
-derives the target from `devTarget`). Field groups (shop-shaped `product_mockups`/`product_counters`
-+ `rt_demo_items` + options/term/author/book-CPT/nested groups), idempotent seeders (guard options +
-sideloaded picsum media), and the seeded "Repeater Tags Demo" page — the visual test stand (bound
-sections + assertion notes; Elementor JSON exports in `dev/`).
+derives the target from `devTarget`): field groups, idempotent seeders (guard options + sideloaded
+picsum media), and the seeded "Repeater Tags Demo" page — the visual test stand (Elementor JSON
+exports in `dev/`).
 
 ## Tests (wp-env + PHPUnit)
 
@@ -101,7 +97,7 @@ gitignored `.wp-env.override.json`. All environment pins move TOGETHER when bump
 core ↔ composer `wp-phpunit` (`~X.Y.0`, mirrors core releases) ↔ the Elementor/PRO Elements/SCF zips.
 
 Tag suites construct tags directly (`new RepeaterText( [ 'id' => …, 'settings' => … ] )`, the same
-seam Elementor's own `Dynamic_Tags\Manager::create_tag()` uses) — see
+seam Elementor's own `Core\DynamicTags\Manager::create_tag()` uses) — see
 `tests/php/Integration/TagTestCase.php` for the two mechanics that constrain how. The `RT Type
 Matrix` fixture group is test-only (no seeder, not on the demo page): its sub-fields are NAMED AFTER
 THEIR ACF TYPE, which is what lets `TagCompatMapTest` drive itself off each tag's
@@ -234,12 +230,13 @@ agent or indexed source (e.g. Secure Custom Fields, wp.org guideline checks).
   `id` is decorative: `create_tag()` resolves the class by `name` alone.
 - **A raw `_elementor_data` write needs `wp_slash()`** — `update_metadata()` unslashes on the way in, so
   an unslashed JSON string comes back corrupted (verified by byte-diff round trip).
-- **The free tier has no target for `arts-repeater-date`**: free Elementor ships no
-  `Controls_Manager::DATE_TIME` control at all, and Pro's Countdown `due_date` is the only DATE_TIME
-  control anywhere that opts into dynamic tags (Pro's others — Popup timing, Form date min/max — don't).
-  Bind a `date_time_picker` sub-field through `arts-repeater-text` instead. Likewise term/user contexts
-  need a Pro Theme Builder archive template to make `get_queried_object()` a WP_Term/WP_User — but the
-  options-page context works free (`Context` checks `options_post_id` first).
+- **The free tier has no target for `arts-repeater-date`**: free Elementor registers the
+  `Controls_Manager::DATE_TIME` type but no free control instance uses it, and Pro's Countdown
+  `due_date` is the only DATE_TIME control anywhere that opts into dynamic tags (Pro's others — Popup
+  timing, Form date min/max, Query date_before/after — don't). Bind a `date_time_picker` sub-field
+  through `arts-repeater-text` instead. Likewise term/user contexts need a Pro Theme Builder archive
+  template to make `get_queried_object()` a WP_Term/WP_User — but the options-page context works free
+  (`Context` checks `options_post_id` first).
 - **Only `RepeaterText`/`RepeaterNumber` support `before`/`after`/`fallback`** — they extend `Tag`; the
   other five extend `Data_Tag`, whose `get_content()` has no affix handling. Any fail-closed demo has
   to go through text or number.

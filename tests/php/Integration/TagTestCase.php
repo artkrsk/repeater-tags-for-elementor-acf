@@ -6,7 +6,7 @@ use Elementor\Core\DynamicTags\Base_Tag;
 
 /**
  * Base for the tag suites. Tags are constructed directly — the same way Elementor's own
- * Dynamic_Tags\Manager::create_tag() does it — so no editor, document or tag-manager
+ * Core\DynamicTags\Manager::create_tag() does it — so no editor, document or tag-manager
  * registration is involved. Two mechanics constrain how:
  *
  * - `id` is load-bearing. Controls_Stack::init() reads $data['id'] off the RAW array (not
