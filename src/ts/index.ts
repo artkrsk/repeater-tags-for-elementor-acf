@@ -30,7 +30,7 @@ function registerRowPicker(): void {
      * done by the control itself (the ArtsQueryControl pattern).
      */
     onRender(this: any, ...args: unknown[]) {
-      Select2View.prototype.onRender.apply(this, args)
+      Select2View.prototype.onRender.apply(this, args as [])
 
       // A child-tier instance re-enumerates when the parent Sub-field selection OR the
       // parent row changes; the top tier keys off the repeater itself.
@@ -69,12 +69,12 @@ function registerRowPicker(): void {
      * fall back to the document's own post (regular pages have no preview_id at all).
      */
     getPreviewPostId(this: any): number {
-      const pageSettings = window.elementor?.settings?.page?.model?.attributes ?? {}
-      const doc = window.elementor?.config?.document ?? {}
-      const configSettings = doc.settings?.settings ?? {}
+      const pageSettings = window.elementor?.settings.page.model.attributes ?? {}
+      const doc = window.elementor?.config.document
+      const configSettings = doc?.settings?.settings ?? {}
 
       return (
-        Number(pageSettings.preview_id) || Number(configSettings.preview_id) || Number(doc.id) || 0
+        Number(pageSettings.preview_id) || Number(configSettings.preview_id) || Number(doc?.id) || 0
       )
     },
 
@@ -85,8 +85,8 @@ function registerRowPicker(): void {
      * ladder resolves (term_{id} / first archive post). '' on regular pages.
      */
     getPreviewType(this: any): string {
-      const pageSettings = window.elementor?.settings?.page?.model?.attributes ?? {}
-      const configSettings = window.elementor?.config?.document?.settings?.settings ?? {}
+      const pageSettings = window.elementor?.settings.page.model.attributes ?? {}
+      const configSettings = window.elementor?.config.document.settings?.settings ?? {}
 
       return String(pageSettings.preview_type ?? configSettings.preview_type ?? '')
     },
