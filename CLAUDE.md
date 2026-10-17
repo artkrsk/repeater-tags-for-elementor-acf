@@ -91,8 +91,9 @@ phpunit config: the main one; `no-acf` (Elementor + Pro, NO ACF — the one comb
 can't express, so it's what Schema's soft-check exists for, and the only suite where the
 Elementor-facing seams run with nothing behind them); and
 `no-provider` (neither — the plugin boots inert, and Context is unreachable there because it
-dereferences `\Elementor\Plugin::$instance`). Ports 8890/8891 on purpose: 8888/8889 are parked by
-another wp-env on the dev Mac, 8880/8881 by plugin-check on the CI runner; local overrides go in the
+dereferences `\Elementor\Plugin::$instance`). Ports 8896/8897 on purpose: 8888/8889 are parked by
+another wp-env on the dev Mac, the other Arts repos hold their own pairs, 8880/8881 belong to
+plugin-check on the CI runner; local overrides go in the
 gitignored `.wp-env.override.json`. All environment pins move TOGETHER when bumping: `.wp-env.json`
 core ↔ composer `wp-phpunit` (`~X.Y.0`, mirrors core releases) ↔ the Elementor/PRO Elements/SCF zips.
 

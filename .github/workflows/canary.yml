@@ -14,4 +14,4 @@ jobs:
     uses: artkrsk/wordpress-plugin-workflows/.github/workflows/canary.yml@main
     with:
       integration_suites: '[]'
-      # wp_env_ports: '8890,8891'
+      # wp_env_ports: '8896,8897'

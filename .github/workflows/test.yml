@@ -35,7 +35,7 @@ jobs:
           exit 1
         fi
       integration_suites: '["tests/php/phpunit.xml.dist", "tests/php/phpunit-no-acf.xml.dist", "tests/php/phpunit-no-provider.xml.dist"]'
-      wp_env_ports: '8890,8891'
+      wp_env_ports: '8896,8897'
       # coverage: true once a JS test suite exists (repo is public — Codecov is viable)
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

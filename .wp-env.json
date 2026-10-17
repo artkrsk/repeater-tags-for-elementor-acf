@@ -1,8 +1,8 @@
 {
 	"core": "https://wordpress.org/wordpress-7.0.1.zip",
 	"phpVersion": "8.3",
-	"port": 8890,
-	"testsPort": 8891,
+	"port": 8896,
+	"testsPort": 8897,
 	"plugins": [
 		"https://downloads.wordpress.org/plugin/elementor.4.1.4.zip",
 		"https://github.com/proelements/proelements/releases/download/v4.1.0/pro-elements.zip",
