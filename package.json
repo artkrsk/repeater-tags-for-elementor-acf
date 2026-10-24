@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.17.0",
+  "packageManager": "pnpm@11.28.8",
   "engines": {
     "node": ">=24"
   },
@@ -18,10 +18,10 @@
   "devDependencies": {
     "@artemsemkin/elementor-types": "^2.0.0",
     "@arts/wp-plugin-tooling": "github:artkrsk/wp-plugin-tooling",
-    "@biomejs/biome": "2.5.4",
+    "@biomejs/biome": "2.6.2",
     "@types/node": "^26.1.1",
     "@vitest/coverage-v8": "^4.1.10",
-    "@wordpress/env": "11.10.0",
+    "@wordpress/env": "11.17.0",
     "fallow": "^3.15.0",
     "happy-dom": "^20.11.2",
     "knip": "^6.32.2",
