@@ -12,7 +12,6 @@
  * Text Domain: repeater-tags-for-elementor-acf
  * Plugin URI: https://artemsemkin.com/plugins/repeater-tags-for-elementor-acf/
  * Author URI: https://artemsemkin.com
- * Tested up to: 7.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
