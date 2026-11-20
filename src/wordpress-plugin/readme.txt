@@ -3,9 +3,9 @@ Contributors: artemsemkin
 Donate link: https://buymeacoffee.com/artemsemkin
 Tags: acf, elementor, dynamic tags, acf repeater, custom fields
 Requires at least: 6.0
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 8.0
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0
 GitHub Plugin URI: https://github.com/artkrsk/repeater-tags-for-elementor-acf/
@@ -112,6 +112,9 @@ Taxonomy term and author archives work; the tag reads the repeater from the quer
 4. A nested repeater sub-field opens a second row and sub-field picker for the child rows
 
 == Changelog ==
+
+= 1.0.2 – November 20, 2026 =
+* improved: confirmed compatibility with WordPress 7.2.
 
 = 1.0.1 – August 13, 2026 =
 * improved: confirmed compatibility with WordPress 7.1.
