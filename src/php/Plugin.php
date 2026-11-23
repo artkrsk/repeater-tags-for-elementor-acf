@@ -2,6 +2,8 @@
 
 namespace Arts\RepeaterTags;
 
+use ArtsRepeaterTags\Arts\Base\Elementor\CacheClear;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -88,5 +90,7 @@ final class Plugin extends Base\Plugin {
 		add_action( 'elementor/element/loop-grid/section_query/before_section_end', array( $this->loop_repeat(), 'register_repeat_control' ) );
 		add_action( 'elementor/element/loop-carousel/section_query/before_section_end', array( $this->loop_repeat(), 'register_repeat_control' ) );
 		add_action( 'elementor/query/query_results', array( $this->loop_repeat(), 'expand_query_results' ), 10, 2 );
+
+		CacheClear::on_version( 'repeater-tags', ARTS_REPEATER_TAGS_PLUGIN_VERSION );
 	}
 }

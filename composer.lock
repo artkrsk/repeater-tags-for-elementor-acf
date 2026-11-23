@@ -4,26 +4,27 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d82fdab68f702bd2145e825d082e77ed",
+    "content-hash": "274e519da6723d0079b0d294a772f15d",
     "packages": [
         {
             "name": "arts/base",
-            "version": "v1.1.1",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/artkrsk/arts-base.git",
-                "reference": "6749b9df1da013612bf1e97d99f3bcec8aa1526a"
+                "reference": "c9374197a4c41129c25ac20f750cf3563c58c2e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/artkrsk/arts-base/zipball/6749b9df1da013612bf1e97d99f3bcec8aa1526a",
-                "reference": "6749b9df1da013612bf1e97d99f3bcec8aa1526a",
+                "url": "https://api.github.com/repos/artkrsk/arts-base/zipball/c9374197a4c41129c25ac20f750cf3563c58c2e8",
+                "reference": "c9374197a4c41129c25ac20f750cf3563c58c2e8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.0"
             },
             "require-dev": {
+                "arts/elementor-stubs": "^4.3",
                 "captainhook/captainhook": "^5.27",
                 "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
                 "ergebnis/composer-normalize": "^2.48",
@@ -51,9 +52,10 @@
             "description": "Framework-agnostic base classes for Arts WordPress plugins",
             "support": {
                 "issues": "https://github.com/artkrsk/arts-base/issues",
-                "source": "https://github.com/artkrsk/arts-base/tree/v1.1.1"
+                "source": "https://github.com/artkrsk/arts-base/tree/v1.2.0"
             },
-            "time": "2026-05-16T17:59:51+00:00"
+            "time": "2026-11-23T12:26:22+00:00",
+            "published-time": "2026-11-23T12:26:38+00:00"
         }
     ],
     "packages-dev": [
@@ -7031,5 +7033,5 @@
         "php": ">=8.0"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }

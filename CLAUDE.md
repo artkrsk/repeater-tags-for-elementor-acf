@@ -109,7 +109,7 @@ type to a tag's map without a fixture sub-field and that test fails loudly.
 
 - `src/wordpress-plugin/` — plugin shell (main file: header, autoloader, boot guard).
 - `src/php/Plugin.php` — singleton; lazy service accessors; wires managers + services onto
-  `elementor/*` hooks.
+  `elementor/*` hooks; registers the Elementor cache clear (arts/base `CacheClear::on_version()`).
 - `src/php/Base/` — thin `arts/base` bridges re-typing `$managers` for PHPStan (`@property` container).
 - `src/php/Managers/` — WP-facing registration only: `Elementor.php` (tag group + tags + control + Pro
   display condition), `Ajax.php` (elementor/ajax/register_actions), `Assets.php` (editor JS enqueue).
