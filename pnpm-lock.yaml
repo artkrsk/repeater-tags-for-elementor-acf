@@ -189,7 +189,7 @@ importers:
   .:
     devDependencies:
       '@artemsemkin/elementor-types':
-        specifier: ^2.1.0
+        specifier: ^2.0.0
         version: 2.1.0(swiper@14.2.0)
       '@arts/wp-plugin-tooling':
         specifier: github:artkrsk/wp-plugin-tooling
@@ -198,31 +198,31 @@ importers:
         specifier: 2.6.9
         version: 2.6.9
       '@types/node':
-        specifier: ^26.6.10
+        specifier: ^26.1.1
         version: 26.6.10
       '@vitest/coverage-v8':
-        specifier: ^5.1.2
+        specifier: ^5.0.0
         version: 5.1.2(vitest@5.1.2)
       '@wordpress/env':
         specifier: 12.2.0
         version: 12.2.0(@types/node@26.6.10)(supports-color@7.2.0)
       fallow:
-        specifier: ^3.48.0
+        specifier: ^3.15.0
         version: 3.48.0
       happy-dom:
         specifier: ^21.0.0
         version: 21.0.4
       knip:
-        specifier: ^6.48.0
+        specifier: ^6.32.2
         version: 6.48.0
       lefthook:
-        specifier: ^2.2.3
+        specifier: ^2.1.10
         version: 2.2.3
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
       vitest:
-        specifier: ^5.1.2
+        specifier: ^5.0.0
         version: 5.1.2(@types/node@26.6.10)(@vitest/coverage-v8@5.1.2)(happy-dom@21.0.4)(vite@8.3.8(@types/node@26.6.10)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.103.1)(yaml@2.9.0))
 
 packages:
