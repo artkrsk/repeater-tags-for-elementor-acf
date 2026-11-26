@@ -1,4 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>artkrsk/renovate-config"]
+  "extends": ["github>artkrsk/renovate-config"],
+  "packageRules": [
+    {
+      "description": "yoast/phpunit-polyfills 4.x allows PHPUnit 7-9, 11 and 12 but not 10, so a v10 bump cannot resolve (#16)",
+      "matchPackageNames": ["phpunit/phpunit"],
+      "allowedVersions": "<10"
+    }
+  ]
 }
