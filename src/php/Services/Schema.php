@@ -419,9 +419,7 @@ class Schema {
 
 				$post_id = acf_get_valid_post_id( $page['post_id'] );
 
-				$is_valid = ( is_int( $post_id ) && $post_id > 0 ) || ( is_string( $post_id ) && '' !== $post_id );
-
-				if ( ! $is_valid ) {
+				if ( ! ( is_int( $post_id ) && $post_id > 0 ) && ! ( is_string( $post_id ) && '' !== $post_id ) ) {
 					continue;
 				}
 
